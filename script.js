@@ -2,7 +2,7 @@ const scanButton = document.getElementById('scanButton');
 const qrCanvas = document.getElementById('qr-canvas');
 
 scanButton.addEventListener('click', () => {
-  navigator.mediaDevices.getUserMedia({ video: true })
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }) // Specify back camera
     .then(stream => {
       qrCanvas.getContext('2d').fillRect(0, 0, qrCanvas.width, qrCanvas.height); // Clear canvas
       qrCanvas.style.display = 'block'; // Show the canvas
@@ -18,15 +18,4 @@ scanButton.addEventListener('click', () => {
         // Perform actions with the URL, e.g., open it in a new tab
         window.open(url, '_blank');
 
-        qrCanvas.style.display = 'none'; // Hide the canvas
-      }).catch(err => {
-        console.error('Error decoding QR code:', err);
-        // Handle errors, e.g., display an error message
-      });
-    })
-    .catch(error => {
-      console.error('Error accessing camera:', error);
-      // Handle camera access errors, e.g., display an error message
-    });
-});
-
+        qr
