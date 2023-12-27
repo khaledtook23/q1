@@ -4,87 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QR Code Scanner</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f4f4f4;
-    }
-
-    #video-container {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    #video {
-      width: 100%;
-      height: auto;
-    }
-
-    #scan-result {
-      margin-top: 20px;
-      font-size: 18px;
-      text-align: center;
-    }
-  </style>
+  <!-- Include html5-qrcode library -->
+  <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
 </head>
 <body>
-  <div id="video-container">
-    <video id="video" playsinline></video>
-    <div id="scan-result"></div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.js"></script>
+  <h1>QR Code Scanner</h1>
+  
+  <!-- Container for the video stream -->
+  <div id="reader" style="width: 100%; max-width: 600px; margin: auto;"></div>
+
+  <!-- Container for displaying scanned URL -->
+  <div id="result"></div>
+
   <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-      const video = document.getElementById('video');
-      const scanResult = document.getElementById('scan-result');
+    // Function to handle the QR code scanning
+    function onScanSuccess(qrCodeMessage) {
+      // Display the scanned URL
+      document.getElementById('result').innerHTML = `<p>Scanned URL: <a href="${qrCodeMessage}" target="_blank">${qrCodeMessage}</a></p>`;
 
-      // Check if the browser supports mediaDevices and getUserMedia
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-          .then((stream) => {
-            video.srcObject = stream;
-            video.play();
-            scanQRCode();
-          })
-          .catch((error) => {
-            console.error('Error accessing camera:', error);
-          });
-      } else {
-        console.error('getUserMedia is not supported in this browser');
-      }
+      // Open the scanned URL in a new tab/window
+      window.open(qrCodeMessage, '_blank');
 
-      function scanQRCode() {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+      // Pause for a moment (you can adjust the delay)
+      setTimeout(() => {
+        // Clear the result container
+        document.getElementById('result').innerHTML = '';
 
-        function scan() {
-          context.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height);
+        // Start scanning again
+        html5QrcodeScanner.start();
+      }, 2000); // 2 seconds delay before scanning again
+    }
 
-          if (code) {
-            scanResult.textContent = 'Scanned QR Code: ' + code.data;
+    // Initialize the QR code scanner
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", // Reader container id
+      { fps: 10, qrbox: 250 } // Optional parameters
+    );
 
-            // Execute the URL (replace with your logic)
-            window.location.href = code.data;
-
-            // Clear the result after a delay (adjust as needed)
-            setTimeout(() => {
-              scanResult.textContent = '';
-            }, 3000);
-          }
-
-          requestAnimationFrame(scan);
-        }
-
-        scan();
-      }
-    });
+    // Start the QR code scanner
+    html5QrcodeScanner.render(onScanSuccess);
   </script>
 </body>
 </html>
