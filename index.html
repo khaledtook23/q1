@@ -18,15 +18,16 @@
 <script src="https://rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  let scanner = new Instascan.Scanner({ video: document.getElementById('video') });
+  let scanner = new Instascan.Scanner({ video: document.getElementById('video'), mirror: false });
   scanner.addListener('scan', function (content) {
     window.location.href = content;
   });
   Instascan.Camera.getCameras().then(function (cameras) {
-    if (cameras.length > 0) {
-      scanner.start(cameras[0]);
+    let backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back'));
+    if (backCamera) {
+      scanner.start(backCamera);
     } else {
-      console.error('No cameras found.');
+      console.error('No back camera found.');
     }
   }).catch(function (e) {
     console.error(e);
