@@ -1,4 +1,4 @@
-let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+let scanner = new Instascan.Scanner({ video: document.getElementById('video') });
 scanner.addListener('scan', function (content) {
   window.location.href = content;
 });
