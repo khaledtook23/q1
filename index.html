@@ -1,28 +1,36 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <!-- Firebase App is always required and must be first -->
-	<script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-app.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-auth.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-database.js"></script>
-	<script src="https://www.gstatic.com/firebasejs/5.8.1/firebase-storage.js"></script>
-    <script src="js/firebase.js"></script>
-
-    <script src="js/logic.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/style.css" >
+  <title>QR Code Scanner</title>
+  <style>
+    #video {
+      width: 100%;
+      height: auto;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">Order</div>
-    <div name="items"> 
-        <table id="table1">
-            <tr class="table-header">
-                <th>Barcode</th>
-                <th>Product</th>
-                <th>Description</th>
-            </tr>
-            <!-- Dynamically add items here -->
-        </table>
 
-        <div id="noitems" class="noitems">No items added yet. Scan barcode of products.</div>
-    </div>
+<video id="video" playsinline></video>
+<button id="startButton">Start Scanning</button>
+
+<script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+<script src="https://rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  let scanner = new Instascan.Scanner({ video: document.getElementById('video') });
+  scanner.addListener('scan', function (content) {
+    window.location.href = content;
+  });
+  Instascan.Camera.getCameras().then(function (cameras) {
+    if (cameras.length > 0) {
+      scanner.start(cameras[0]);
+    } else {
+      console.error('No cameras found.');
+    }
+  }).catch(function (e) {
+    console.error(e);
+  });
+</script>
 </body>
 </html>
